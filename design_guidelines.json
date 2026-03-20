@@ -1,0 +1,173 @@
+{
+  "project_name": "VÁHY DYCHL",
+  "design_philosophy": {
+    "identity": "The Modern Industrialist",
+    "core_principles": [
+      "Precision Engineering: Every pixel aligned, every interaction deliberate.",
+      "Industrial Clarity: High contrast, no fluff, data-first.",
+      "Trust through Structure: Rigid grids that imply stability and reliability.",
+      "Safety Orange Accents: Use the accent color like safety warnings - sparingly but effectively."
+    ],
+    "vibe": "Reliable, robust, precise, and technologically advanced. Not 'dusty old factory' but 'modern automated logistics center'.",
+    "archetype": "The Performance Pro (Industrial Variant)"
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "hero_headline": "text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]",
+      "section_headline": "text-3xl md:text-4xl font-semibold tracking-tight",
+      "card_title": "text-xl font-bold text-slate-900",
+      "body_large": "text-lg text-slate-600 leading-relaxed",
+      "body_base": "text-base text-slate-600 leading-relaxed",
+      "label": "text-xs font-bold uppercase tracking-wider text-slate-500",
+      "nav_link": "text-sm font-medium text-slate-200 hover:text-white transition-colors"
+    },
+    "installation": "Import Manrope and Inter from Google Fonts in the CSS file."
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "name": "Deep Industrial Navy",
+        "hex": "#0F172A",
+        "tailwind": "bg-slate-900",
+        "usage": "Hero backgrounds, Footer, Primary Text, Strong Borders"
+      },
+      "secondary": {
+        "name": "Steel Gray",
+        "hex": "#64748B",
+        "tailwind": "text-slate-500",
+        "usage": "Secondary text, Borders, Icons, Subtle backgrounds"
+      },
+      "accent": {
+        "name": "Safety Orange",
+        "hex": "#EA580C",
+        "tailwind": "bg-orange-600",
+        "usage": "Primary CTAs, Sale Badges, Hover states, Key highlights"
+      },
+      "background": {
+        "light": "#FFFFFF",
+        "off_white": "#F8FAFC",
+        "dark": "#020617"
+      },
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444"
+    },
+    "gradients": {
+      "hero_overlay": "linear-gradient(to bottom right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8))",
+      "subtle_gloss": "linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)"
+    }
+  },
+  "layout": {
+    "grid_system": "The Bento Grid (Industrial Mode)",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section_vertical": "py-24 md:py-32",
+      "element_gap": "gap-6 md:gap-8",
+      "internal_padding": "p-6 md:p-8"
+    },
+    "border_radius": {
+      "default": "rounded-none",
+      "subtle": "rounded-sm",
+      "buttons": "rounded-md"
+    },
+    "z_index": {
+      "nav": 50,
+      "modal": 100,
+      "dropdown": 40,
+      "toast": 110
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-8 rounded-md shadow-lg shadow-orange-900/20 transition-all hover:-translate-y-0.5 active:translate-y-0",
+      "secondary": "bg-white text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 font-medium py-3 px-8 rounded-md transition-all",
+      "ghost": "text-slate-600 hover:text-orange-600 font-medium px-4 py-2 hover:bg-orange-50 rounded-md transition-colors"
+    },
+    "cards": {
+      "product": "group relative bg-white border border-slate-200 hover:border-orange-500/50 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 overflow-hidden",
+      "service": "bg-slate-50 border border-slate-100 p-8 hover:bg-white hover:shadow-md transition-all",
+      "bento_item": "bg-white border border-slate-200 p-8 flex flex-col justify-between hover:border-slate-300 transition-colors"
+    },
+    "inputs": {
+      "default": "flex h-12 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    },
+    "badges": {
+      "sale": "bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide",
+      "new": "bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide"
+    }
+  },
+  "assets": {
+    "icons": "Lucide React (already installed). Use clear, geometric icons (e.g., Scale, Settings, Truck, Phone, Search, Menu, ChevronDown).",
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1747085040719-55282cc206b9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZGlnaXRhbCUyMHNjYWxlJTIwd2FyZWhvdXNlfGVufDB8fHx8MTc3NDAyMzAzN3ww&ixlib=rb-4.1.0&q=85",
+      "categories": {
+        "industrial_scales": "https://images.unsplash.com/photo-1700582053942-44c81e76a168?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwcGxhdGZvcm0lMjBzY2FsZSUyMG1ldGFsJTIwZmxvb3J8ZW58MHx8fHwxNzc0MDIzMDQ0fDA&ixlib=rb-4.1.0&q=85",
+        "cash_registers": "https://images.unsplash.com/photo-1764795849833-6e9d6e399a77?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBwb2ludCUyMG9mJTIwc2FsZSUyMHN5c3RlbSUyMHJldGFpbHxlbnwwfHx8fDE3NzQwMjMwMzh8MA&ixlib=rb-4.1.0&q=85",
+        "lab_scales": "https://images.pexels.com/photos/3912364/pexels-photo-3912364.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "calibration": "https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      },
+      "bestsellers": [
+        "https://images.unsplash.com/photo-1772683709393-f0cf8c226872?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxsYWJvcmF0b3J5JTIwcHJlY2lzaW9uJTIwc2NhbGUlMjBkaWdpdGFsfGVufDB8fHx8MTc3NDAyMzA0NXww&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1764795850459-3e73e5013ae8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjBwb2ludCUyMG9mJTIwc2FsZSUyMHN5c3RlbSUyMHJldGFpbHxlbnwwfHx8fDE3NzQwMjMwMzh8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1720036236632-fdb6211cf317?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwzfHxpbmR1c3RyaWFsJTIwZGlnaXRhbCUyMHNjYWxlJTIwd2FyZWhvdXNlfGVufDB8fHx8MTc3NDAyMzAzN3ww&ixlib=rb-4.1.0&q=85"
+      ]
+    }
+  },
+  "sections": {
+    "header": {
+      "bg": "bg-slate-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-slate-900/80",
+      "height": "h-20",
+      "elements": "Logo (White text), Nav Links (Hover orange), Phone (Bold white), CTA (Orange Button)"
+    },
+    "hero": {
+      "layout": "Split screen or Centered with heavy background overlay.",
+      "content": "Headline: 'Precision You Can Trust' (in Czech: 'Přesnost, na kterou se můžete spolehnout'). Subhead: Industrial scales and calibration services for modern business.",
+      "cta": "Primary: 'Poptat řešení', Secondary: 'Naše služby'"
+    },
+    "bento_grid": {
+      "layout": "Grid cols 1 md:cols-3 lg:cols-4 gap-4 auto-rows-[300px]",
+      "items": [
+        {"span": "col-span-2 row-span-2", "title": "Průmyslové váhy", "image": "industrial_scales"},
+        {"span": "col-span-1 row-span-1", "title": "Pokladní systémy", "image": "cash_registers"},
+        {"span": "col-span-1 row-span-2", "title": "Laboratorní váhy", "image": "lab_scales"},
+        {"span": "col-span-1 row-span-1", "title": "Kalibrace & Servis", "image": "calibration"}
+      ]
+    }
+  },
+  "motion": {
+    "library": "framer-motion",
+    "defaults": {
+      "duration": 0.3,
+      "ease": "easeInOut"
+    },
+    "hover_scale": "scale-[1.02]",
+    "scroll_reveal": "initial={{opacity: 0, y: 20}} whileInView={{opacity: 1, y: 0}} viewport={{once: true}}"
+  },
+  "accessibility": {
+    "contrast": "Ensure Orange text is only used on Dark backgrounds or as buttons. On white background, use Orange only for graphical elements, not body text.",
+    "focus_states": "focus:ring-2 focus:ring-orange-500 focus:ring-offset-2",
+    "aria": "All icon-only buttons must have aria-label. Images must have alt text."
+  },
+  "instructions_to_main_agent": [
+    "1. Setup Shadcn UI first. Install button, card, input, form, select, sheet (for mobile menu), separator.",
+    "2. Configure Tailwind with the specific colors defined above.",
+    "3. Create the 'Layout' component with the sticky header and footer.",
+    "4. Build the 'Hero' section using the dark theme strategy.",
+    "5. Implement the 'Bento Grid' for categories - this is the visual centerpiece.",
+    "6. Use 'Lucide-react' icons for all UI elements.",
+    "7. Ensure the Contact form uses proper validation (Zod + React Hook Form).",
+    "8. TRANSLATE ALL CONTENT TO CZECH as per requirements.",
+    "9. Use the provided image URLs. Do not use placeholders."
+  ],
+  "universal_guidelines": [
+    "Do not use generic centered layouts everywhere. Use asymmetry.",
+    "Use generous padding (py-24) between sections.",
+    "Don't use gradients for text.",
+    "Ensure all interactive elements have data-testid."
+  ]
+}
