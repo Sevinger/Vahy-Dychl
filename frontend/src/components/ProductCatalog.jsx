@@ -14,6 +14,7 @@ import {
   Clock,
   ShieldCheck,
 } from "lucide-react";
+import ProductDetailModal from "./ProductDetailModal";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -161,15 +162,22 @@ const CATALOG = [
 /* ──────────────────────────────────────────────────────────── */
 /*  PRODUCT CARD                                                */
 /* ──────────────────────────────────────────────────────────── */
-function ProductCard({ product, imageUrl }) {
+function ProductCard({ product, imageUrl, onProductClick }) {
   const isMBadge = product.badge === "M";
   const isCBadge = product.badge === "C";
   const isOBadge = product.badge === "O";
   const [imgError, setImgError] = useState(false);
 
+  const handleCardClick = (e) => {
+    // Prevent click if user clicked the CTA button
+    if (e.target.closest('[data-testid^="product-cta-"]')) return;
+    onProductClick?.(product);
+  };
+
   return (
     <div
-      className="group relative bg-white border border-slate-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/60 hover:border-slate-300 hover:-translate-y-0.5 flex flex-col"
+      onClick={handleCardClick}
+      className="group relative bg-white border border-slate-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/60 hover:border-slate-300 hover:-translate-y-0.5 flex flex-col cursor-pointer"
       data-testid={`product-card-${product.id}`}
     >
       {/* Badge */}
@@ -443,6 +451,15 @@ export default function ProductCatalog() {
   const [activeSub, setActiveSub] = useState("laboratorni");
   const [searchQuery, setSearchQuery] = useState("");
   const [imageProductIds, setImageProductIds] = useState(new Set());
+  
+  // Product detail modal state
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
 
   // Fetch which products have images
   useEffect(() => {
@@ -606,6 +623,7 @@ export default function ProductCatalog() {
                         ? `${API}/products/${product.id}/image`
                         : null
                     }
+                    onProductClick={handleProductClick}
                   />
                 ))
               )}
@@ -613,6 +631,18 @@ export default function ProductCatalog() {
           </div>
         </div>
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        imageUrl={
+          selectedProduct && imageProductIds.has(selectedProduct.id)
+            ? `${API}/products/${selectedProduct.id}/image`
+            : null
+        }
+      />
     </section>
   );
 }

@@ -256,6 +256,44 @@ async def get_all_product_images():
     ).to_list(1000)
     return {"product_ids": [img["product_id"] for img in images]}
 
+# ── Product Details Routes ───────────────────────────────────
+@api_router.post("/admin/products/details/bulk")
+async def bulk_upsert_product_details(
+    data: dict,
+    _auth: bool = Depends(verify_admin_token)
+):
+    """Bulk upsert product details. Expects {products: {id: {specs: [...], descriptions: [...]}}}"""
+    products = data.get("products", {})
+    count = 0
+    for pid, details in products.items():
+        await db.product_details.update_one(
+            {"product_id": pid},
+            {"$set": {
+                "product_id": pid,
+                "specs": details.get("specs", []),
+                "descriptions": details.get("descriptions", []),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+        count += 1
+    return {"status": "success", "count": count}
+
+@api_router.get("/products/{product_id}/details")
+async def get_product_details(product_id: str):
+    record = await db.product_details.find_one(
+        {"product_id": product_id},
+        {"_id": 0}
+    )
+    if not record:
+        return {"product_id": product_id, "specs": [], "descriptions": []}
+    return record
+
+@api_router.get("/products/details/all")
+async def get_all_product_details():
+    records = await db.product_details.find({}, {"_id": 0}).to_list(1000)
+    return {r["product_id"]: {"specs": r.get("specs", []), "descriptions": r.get("descriptions", [])} for r in records}
+
 app.include_router(api_router)
 
 app.add_middleware(
