@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -11,6 +11,7 @@ import {
   ArrowRight,
   BadgeCheck,
   Clock,
+  ShieldCheck,
 } from "lucide-react";
 
 /* ──────────────────────────────────────────────────────────── */
@@ -29,26 +30,30 @@ const CATALOG = [
           {
             id: "z1",
             name: "Kojenecká váha TSCALE",
-            price: "od 7.190 Kč",
+            price: "7.190 Kč bez DPH",
             badge: "M",
-            badgeLabel: "M (Ověřeno)",
-            specs: "Přesné vážení kojenců",
+            badgeLabel: "Úředně ověřeno M",
           },
           {
             id: "z2",
-            name: "Mobilní vážící křeslo",
-            price: "od 23.700 Kč",
+            name: "Mobilní vážící křeslo TSCALE",
+            price: "23.700 Kč bez DPH",
             badge: "M",
-            badgeLabel: "M",
-            specs: "Pro imobilní pacienty",
+            badgeLabel: "Úředně ověřeno M",
           },
           {
             id: "z3",
-            name: "Nájezdová váha pro vozíky",
-            price: "od 25.990 Kč",
+            name: "Váha pro invalidní vozíky CAS-W",
+            price: "25.990 Kč bez DPH",
             badge: "M",
-            badgeLabel: "M",
-            specs: "Invalidní & nemocniční vozíky",
+            badgeLabel: "Úředně ověřeno M",
+          },
+          {
+            id: "z4",
+            name: "Lůžková váha CAS-L",
+            price: "od 35.000 Kč",
+            badge: "M",
+            badgeLabel: "Úředně ověřeno M",
           },
         ],
       },
@@ -59,14 +64,14 @@ const CATALOG = [
           {
             id: "p1",
             name: "Paletový vozík s váhou KPZ1",
-            price: "od 22.590 Kč",
-            specs: "Váživost 2200 kg",
+            price: "22.590 Kč bez DPH",
+            specs: "Váživost: 2200kg",
           },
           {
             id: "p2",
             name: "Ližinová váha 4TLDFWL",
-            price: "od 19.900 Kč",
-            specs: "Pro standardní palety",
+            price: "19.900 Kč bez DPH",
+            specs: "Pro extrémní zatížení",
           },
         ],
       },
@@ -77,32 +82,20 @@ const CATALOG = [
           {
             id: "m1",
             name: "Plošinová váha 4T",
-            price: "od 23.140 Kč",
-            specs: "Až 1500 kg",
+            price: "23.140 Kč bez DPH",
+            specs: "Váživost do 1500kg",
           },
           {
             id: "m2",
-            name: "Stolní váha FOX-1",
-            price: "od 6.260 Kč",
-            specs: "Kompaktní stolní řešení",
-          },
-        ],
-      },
-      {
-        id: "laboratorni",
-        label: "Laboratorní váhy",
-        products: [
-          {
-            id: "l1",
-            name: "Analytická váha Kern AET",
-            price: "158.600 Kč",
-            specs: "Dotykový displej",
+            name: "Stolní můstková váha FOX-1",
+            price: "6.260 Kč bez DPH",
           },
           {
-            id: "l2",
-            name: "CAS XE600g",
-            price: "9.600 Kč",
-            specs: "Přesnost 0,01 g",
+            id: "m3",
+            name: "Stolní váha FOX-2",
+            price: "od 5.800 Kč",
+            badge: "C",
+            badgeLabel: "Cejchuschopná",
           },
         ],
       },
@@ -113,19 +106,82 @@ const CATALOG = [
           {
             id: "o1",
             name: "ACLAS PS1-15B (bez tisku)",
-            price: "3.790 Kč",
-            specs: "Základní obchodní váha",
+            price: "3.790 Kč bez DPH",
+            specs: "Váživost 15kg",
           },
           {
             id: "o2",
+            name: "CAS PR2 (bez tisku)",
+            price: "3.190 Kč bez DPH",
+          },
+          {
+            id: "o3",
             name: "CAS-CL5000 (s tiskem)",
-            price: "27.800 Kč",
-            specs: "S tiskem etiket",
+            price: "27.800 Kč bez DPH",
+            specs: "Tisk etiket",
+          },
+          {
+            id: "o4",
+            name: "DIGI SM-5100 B/P (s tiskem)",
+            price: "od 31.000 Kč",
+            specs: "Profesionální e-shopové vážení",
           },
         ],
       },
-      { id: "silnicni", label: "Silniční váhy", products: [] },
-      { id: "jerabove", label: "Jeřábové váhy", products: [] },
+      {
+        id: "laboratorni",
+        label: "Laboratorní a přesné váhy",
+        products: [
+          {
+            id: "l1",
+            name: "Analytická váha Kern AET",
+            price: "158.600 Kč bez DPH",
+            specs: "Vysoká přesnost, dotykový displej",
+          },
+          {
+            id: "l2",
+            name: "CAS XE600g/6000g",
+            price: "9.600 Kč bez DPH",
+          },
+        ],
+      },
+      {
+        id: "jerabove",
+        label: "Jeřábové váhy",
+        products: [
+          {
+            id: "j1",
+            name: "Jeřábová váha JEV",
+            price: "od 18.900 Kč",
+            specs: "S dálkovým ovládáním",
+          },
+          {
+            id: "j2",
+            name: "J1-RWS NEREZ",
+            price: "od 22.000 Kč",
+            specs: "Do mokrého prostředí",
+          },
+        ],
+      },
+      {
+        id: "silnicni",
+        label: "Silniční mostové váhy",
+        products: [
+          {
+            id: "s1",
+            name: "Silniční váha Profi Universal",
+            noPrice: true,
+            ctaText: "Nezávazná poptávka",
+            specs: "Váživost do 60 tun",
+          },
+          {
+            id: "s2",
+            name: "Nájezdová automobilová váha",
+            noPrice: true,
+            ctaText: "Nezávazná poptávka",
+          },
+        ],
+      },
       { id: "pocitaci", label: "Počítací váhy", products: [] },
       { id: "indikatory", label: "Indikátory", products: [] },
     ],
@@ -137,25 +193,18 @@ const CATALOG = [
     subcategories: [
       {
         id: "pokladny-all",
-        label: "Pokladny a příslušenství",
+        label: "Registrační pokladny",
         products: [
           {
             id: "pk1",
             name: "Pokladna CHD 3050",
-            price: "6.690 Kč",
+            price: "6.690 Kč bez DPH",
             specs: "Bez měsíčních poplatků",
           },
           {
             id: "pk2",
             name: "Pokladna CHD 3850",
-            price: "8.350 Kč",
-            specs: "Velká zásuvka",
-          },
-          {
-            id: "pk3",
-            name: "Termokotoučky a etikety",
-            price: "Dle typu",
-            specs: "Příslušenství pro pokladny",
+            price: "8.350 Kč bez DPH",
           },
         ],
       },
@@ -167,18 +216,29 @@ const CATALOG = [
 /*  PRODUCT CARD                                                */
 /* ──────────────────────────────────────────────────────────── */
 function ProductCard({ product }) {
+  const isMBadge = product.badge === "M";
+  const isCBadge = product.badge === "C";
+
   return (
     <div
       className="group relative bg-white border border-slate-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/60 hover:border-slate-300 hover:-translate-y-0.5 flex flex-col"
       data-testid={`product-card-${product.id}`}
     >
-      {/* Badge */}
+      {/* Badge — green for M, amber for Cejchuschopná */}
       {product.badge && (
         <div
-          className="absolute top-3 right-3 z-10 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm"
+          className={`absolute top-3 right-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${
+            isMBadge
+              ? "bg-emerald-500 text-white"
+              : "bg-amber-100 text-amber-700 border border-amber-200"
+          }`}
           data-testid={`product-badge-${product.id}`}
         >
-          <BadgeCheck className="w-3 h-3" />
+          {isMBadge ? (
+            <BadgeCheck className="w-3 h-3" />
+          ) : (
+            <ShieldCheck className="w-3 h-3" />
+          )}
           {product.badgeLabel || product.badge}
         </div>
       )}
@@ -191,7 +251,6 @@ function ProductCard({ product }) {
             Foto produktu
           </span>
         </div>
-        {/* Subtle gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
@@ -211,17 +270,22 @@ function ProductCard({ product }) {
         )}
 
         <div className="mt-auto pt-4">
-          <p
-            className="text-lg font-bold text-[#0F172A] font-['Inter']"
-            data-testid={`product-price-${product.id}`}
-          >
-            {product.price}
-          </p>
+          {/* Price — hidden for noPrice products */}
+          {!product.noPrice && product.price && (
+            <p
+              className="text-lg font-bold text-[#0F172A] font-['Inter']"
+              data-testid={`product-price-${product.id}`}
+            >
+              {product.price}
+            </p>
+          )}
           <Button
-            className="mt-3 w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold text-sm rounded-md h-10 shadow-sm shadow-red-900/10 transition-all hover:-translate-y-px active:translate-y-0"
+            className={`w-full font-semibold text-sm rounded-md h-10 shadow-sm transition-all hover:-translate-y-px active:translate-y-0 ${
+              product.noPrice ? "mt-1" : "mt-3"
+            } bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-red-900/10`}
             data-testid={`product-cta-${product.id}`}
           >
-            Poptat produkt
+            {product.ctaText || "Poptat produkt"}
             <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
           </Button>
         </div>
@@ -420,6 +484,18 @@ export default function ProductCatalog() {
   const [expandedParent, setExpandedParent] = useState("vahy");
   const [activeSub, setActiveSub] = useState("zdravotnicke");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Listen for category selection events from CategoriesGrid
+  useEffect(() => {
+    const handler = (e) => {
+      const { parentId, subId } = e.detail;
+      setExpandedParent(parentId);
+      setActiveSub(subId);
+      setSearchQuery("");
+    };
+    window.addEventListener("selectCatalogCategory", handler);
+    return () => window.removeEventListener("selectCatalogCategory", handler);
+  }, []);
 
   // Find currently active subcategory data
   const activeSubData = useMemo(() => {
