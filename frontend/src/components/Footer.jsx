@@ -140,6 +140,13 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} VÁHY-DYCHL. Všechna práva vyhrazena.
           </p>
           <div className="flex gap-6">
+            <a
+              href="/admin"
+              className="text-xs text-slate-600 hover:text-slate-400 flex items-center gap-1 transition-colors"
+              data-testid="footer-admin-link"
+            >
+              Administrace
+            </a>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="text-xs text-slate-500 hover:text-orange-400 flex items-center gap-1 transition-colors"
