@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "@/App.css";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -8,10 +9,10 @@ import Bestsellers from "@/components/Bestsellers";
 import ServiceSection from "@/components/ServiceSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import AdminPanel from "@/components/AdminPanel";
 import { Toaster } from "@/components/ui/sonner";
 
-function App() {
-  // Scroll reveal effect
+function HomePage() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -23,11 +24,9 @@ function App() {
       },
       { threshold: 0.1 }
     );
-
     document.querySelectorAll(".section-reveal").forEach((el) => {
       observer.observe(el);
     });
-
     return () => observer.disconnect();
   }, []);
 
@@ -43,8 +42,19 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
-      <Toaster position="top-right" richColors />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
+      <Toaster position="top-right" richColors />
+    </BrowserRouter>
   );
 }
 

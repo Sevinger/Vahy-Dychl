@@ -1,5 +1,6 @@
 import requests
 import sys
+import io
 from datetime import datetime
 
 class VahyDychlAPITester:
@@ -8,6 +9,7 @@ class VahyDychlAPITester:
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
+        self.admin_token = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
@@ -116,6 +118,162 @@ class VahyDychlAPITester:
             "api/nonexistent",
             404
         )
+
+    def test_admin_login_correct_password(self):
+        """Test admin login with correct password"""
+        test_data = {
+            "password": "admin123"
+        }
+        
+        success, response = self.run_test(
+            "Admin Login - Correct Password",
+            "POST",
+            "api/admin/login",
+            200,
+            data=test_data
+        )
+        
+        if success and 'token' in response:
+            self.admin_token = response['token']
+            print(f"✅ Admin token obtained: {self.admin_token[:20]}...")
+            return True
+        return False
+
+    def test_admin_login_wrong_password(self):
+        """Test admin login with wrong password"""
+        test_data = {
+            "password": "wrongpassword"
+        }
+        
+        return self.run_test(
+            "Admin Login - Wrong Password",
+            "POST",
+            "api/admin/login",
+            401,
+            data=test_data
+        )
+
+    def test_upload_product_image(self):
+        """Test uploading a product image"""
+        if not self.admin_token:
+            print("❌ No admin token available for image upload test")
+            return False
+            
+        # Create a simple test image (1x1 pixel PNG)
+        test_image_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\nIDATx\x9cc\xf8\x00\x00\x00\x01\x00\x01\x00\x00\x00\x00IEND\xaeB`\x82'
+        
+        url = f"{self.base_url}/api/admin/products/l1/image"
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        files = {'file': ('test.png', test_image_data, 'image/png')}
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing Upload Product Image...")
+        print(f"URL: {url}")
+        
+        try:
+            response = requests.post(url, files=files, headers=headers, timeout=30)
+            print(f"Response Status: {response.status_code}")
+            
+            success = response.status_code == 200
+            if success:
+                self.tests_passed += 1
+                print(f"✅ PASSED - Image uploaded successfully")
+                try:
+                    response_data = response.json()
+                    print(f"Response: {response_data}")
+                    return True
+                except:
+                    print(f"Response text: {response.text[:200]}")
+                    return True
+            else:
+                self.failed_tests.append({
+                    'test': 'Upload Product Image',
+                    'expected': 200,
+                    'actual': response.status_code,
+                    'response': response.text[:200]
+                })
+                print(f"❌ FAILED - Expected 200, got {response.status_code}")
+                print(f"Response: {response.text[:200]}")
+                return False
+                
+        except Exception as e:
+            self.failed_tests.append({
+                'test': 'Upload Product Image',
+                'error': str(e)
+            })
+            print(f"❌ FAILED - Error: {str(e)}")
+            return False
+
+    def test_get_product_image(self):
+        """Test getting a product image"""
+        return self.run_test(
+            "Get Product Image",
+            "GET",
+            "api/products/l1/image",
+            200
+        )
+
+    def test_get_all_product_images(self):
+        """Test getting list of all product images"""
+        success, response = self.run_test(
+            "Get All Product Images",
+            "GET",
+            "api/products/images/all",
+            200
+        )
+        
+        if success and 'product_ids' in response:
+            print(f"✅ Found {len(response['product_ids'])} products with images")
+            return True
+        return success
+
+    def test_delete_product_image(self):
+        """Test deleting a product image"""
+        if not self.admin_token:
+            print("❌ No admin token available for image delete test")
+            return False
+            
+        url = f"{self.base_url}/api/admin/products/l1/image"
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing Delete Product Image...")
+        print(f"URL: {url}")
+        
+        try:
+            response = requests.delete(url, headers=headers, timeout=10)
+            print(f"Response Status: {response.status_code}")
+            
+            success = response.status_code == 200
+            if success:
+                self.tests_passed += 1
+                print(f"✅ PASSED - Image deleted successfully")
+                try:
+                    response_data = response.json()
+                    print(f"Response: {response_data}")
+                    return True
+                except:
+                    print(f"Response text: {response.text[:200]}")
+                    return True
+            else:
+                self.failed_tests.append({
+                    'test': 'Delete Product Image',
+                    'expected': 200,
+                    'actual': response.status_code,
+                    'response': response.text[:200]
+                })
+                print(f"❌ FAILED - Expected 200, got {response.status_code}")
+                print(f"Response: {response.text[:200]}")
+                return False
+                
+        except Exception as e:
+            self.failed_tests.append({
+                'test': 'Delete Product Image',
+                'error': str(e)
+            })
+            print(f"❌ FAILED - Error: {str(e)}")
+            return False
 
 def main():
     print("=" * 60)

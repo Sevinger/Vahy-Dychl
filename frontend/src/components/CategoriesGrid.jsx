@@ -8,7 +8,7 @@ const categories = [
     image: "https://images.unsplash.com/photo-1764795849833-6e9d6e399a77?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBwb2ludCUyMG9mJTIwc2FsZSUyMHN5c3RlbSUyMHJldGFpbHxlbnwwfHx8fDE3NzQwMjMwMzh8MA&ixlib=rb-4.1.0&q=85",
     span: "md:col-span-1 md:row-span-1",
     catalogParentId: "vahy",
-    catalogSubId: "obchodni",
+    catalogSubId: "obchodni-bez",
   },
   {
     title: "Průmyslové, plošinové a paletové váhy",

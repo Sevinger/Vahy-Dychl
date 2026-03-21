@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import axios from "axios";
 import {
   ChevronDown,
   ChevronRight,
@@ -14,6 +15,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
 /* ──────────────────────────────────────────────────────────── */
 /*  CATALOG DATA                                                */
 /* ──────────────────────────────────────────────────────────── */
@@ -24,166 +27,116 @@ const CATALOG = [
     icon: Scale,
     subcategories: [
       {
-        id: "zdravotnicke",
-        label: "Zdravotnické váhy",
-        products: [
-          {
-            id: "z1",
-            name: "Kojenecká váha TSCALE",
-            price: "7.190 Kč bez DPH",
-            badge: "M",
-            badgeLabel: "Úředně ověřeno M",
-          },
-          {
-            id: "z2",
-            name: "Mobilní vážící křeslo TSCALE",
-            price: "23.700 Kč bez DPH",
-            badge: "M",
-            badgeLabel: "Úředně ověřeno M",
-          },
-          {
-            id: "z3",
-            name: "Váha pro invalidní vozíky CAS-W",
-            price: "25.990 Kč bez DPH",
-            badge: "M",
-            badgeLabel: "Úředně ověřeno M",
-          },
-          {
-            id: "z4",
-            name: "Lůžková váha CAS-L",
-            price: "od 35.000 Kč",
-            badge: "M",
-            badgeLabel: "Úředně ověřeno M",
-          },
-        ],
-      },
-      {
-        id: "paletove",
-        label: "Paletové váhy",
-        products: [
-          {
-            id: "p1",
-            name: "Paletový vozík s váhou KPZ1",
-            price: "22.590 Kč bez DPH",
-            specs: "Váživost: 2200kg",
-          },
-          {
-            id: "p2",
-            name: "Ližinová váha 4TLDFWL",
-            price: "19.900 Kč bez DPH",
-            specs: "Pro extrémní zatížení",
-          },
-        ],
-      },
-      {
-        id: "mustkove",
-        label: "Můstkové a plošinové váhy",
-        products: [
-          {
-            id: "m1",
-            name: "Plošinová váha 4T",
-            price: "23.140 Kč bez DPH",
-            specs: "Váživost do 1500kg",
-          },
-          {
-            id: "m2",
-            name: "Stolní můstková váha FOX-1",
-            price: "6.260 Kč bez DPH",
-          },
-          {
-            id: "m3",
-            name: "Stolní váha FOX-2",
-            price: "od 5.800 Kč",
-            badge: "C",
-            badgeLabel: "Cejchuschopná",
-          },
-        ],
-      },
-      {
-        id: "obchodni",
-        label: "Obchodní váhy",
-        products: [
-          {
-            id: "o1",
-            name: "ACLAS PS1-15B (bez tisku)",
-            price: "3.790 Kč bez DPH",
-            specs: "Váživost 15kg",
-          },
-          {
-            id: "o2",
-            name: "CAS PR2 (bez tisku)",
-            price: "3.190 Kč bez DPH",
-          },
-          {
-            id: "o3",
-            name: "CAS-CL5000 (s tiskem)",
-            price: "27.800 Kč bez DPH",
-            specs: "Tisk etiket",
-          },
-          {
-            id: "o4",
-            name: "DIGI SM-5100 B/P (s tiskem)",
-            price: "od 31.000 Kč",
-            specs: "Profesionální e-shopové vážení",
-          },
-        ],
-      },
-      {
         id: "laboratorni",
-        label: "Laboratorní a přesné váhy",
+        label: "Laboratorní přesné váhy, analytické",
         products: [
-          {
-            id: "l1",
-            name: "Analytická váha Kern AET",
-            price: "158.600 Kč bez DPH",
-            specs: "Vysoká přesnost, dotykový displej",
-          },
-          {
-            id: "l2",
-            name: "CAS XE600g/6000g",
-            price: "9.600 Kč bez DPH",
-          },
+          { id: "l1", name: "Kern AET", specs: "Analytická váha, Cejchovatelná, Dotykový displej", price: "158.600 Kč bez DPH", badge: "C", badgeLabel: "Cejchovatelná" },
+          { id: "l2", name: "ABS-ABJ", specs: "Analytická váha, Cejchovatelná, Jednočlánkový vážící systém", price: "24.960 Kč bez DPH", badge: "C", badgeLabel: "Cejchovatelná" },
+          { id: "l3", name: "ALD", specs: "Analytická váha, Vnitřní kalibrace, Možnost ověření", price: "32.200 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "l4", name: "CAS XE600g / 6000g", specs: "Pro zlatníky, lékárny, laboratoře. Úředně ověřeno", price: "9.600 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+        ],
+      },
+      {
+        id: "obchodni-bez",
+        label: "Obchodní váhy bez tisku",
+        products: [
+          { id: "ob1", name: "ACLAS PS1-15B", specs: "Výpočet ceny, Váživost 6/15kg, Úředně ověřeno", price: "3.790 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "ob2", name: "CAS PR2 / PR2 s nožkou", specs: "Dvourozsahová, Akumulátor, Úředně ověřeno", price: "4.290 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "ob3", name: "TSQTP / TSQSP", specs: "Výpočet vratné částky, Úředně ověřeno", price: "5.990 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "ob4", name: "CAS-ER plus", specs: "Skvělý poměr výkon/cena, Úředně ověřeno", price: "7.790 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+        ],
+      },
+      {
+        id: "obchodni-s",
+        label: "Obchodní váhy s tiskem",
+        products: [
+          { id: "os1", name: "CAS-CL5000", specs: "Tisk účtenek nebo etiket, Úředně ověřeno", price: "27.800 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "os2", name: "SM-500", specs: "Dvourozsahová, Tisk účtenek/etiket, Úředně ověřeno", price: "37.700 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "os3", name: "DIGI SM 5100 B/P", specs: "Tisk účtenek i etiket, Úředně ověřeno", price: "33.780 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+        ],
+      },
+      {
+        id: "kuchyne",
+        label: "Váhy pro kuchyně a sklady",
+        products: [
+          { id: "k1", name: "TST28", specs: "Dvourozsahová, s akumulátorem, Úředně ověřeno", price: "4.790 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "k2", name: "TS-SW", specs: "Voděodolná s akumulátorem, Úředně ověřeno", price: "6.490 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "k3", name: "TSS29B", specs: "Nerezová, Voděodolná proti stříkající vodě, Úředně ověřeno", price: "7.290 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "k4", name: "CAS-ED", specs: "S akumulátorem, Váživost do 30kg, Úředně ověřeno", price: "7.200 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "k5", name: "CAS-SW", specs: "Řada W - voděodolná, Dvourozsahová, Úředně ověřeno", price: "5.190 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+        ],
+      },
+      {
+        id: "pocitaci",
+        label: "Počítací váhy",
+        products: [
+          { id: "pc1", name: "NHB", specs: "Laboratorní váha, Neověřená, Rychlé vážení", price: "5.390 Kč bez DPH" },
+          { id: "pc2", name: "NHBM", specs: "Laboratorní váha, Úředně ověřená", price: "8.690 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "pc3", name: "TSCALE QHW++", specs: "Přesnost 0.02g, Výdrž aku 90 hod", price: "6.890 Kč bez DPH" },
+          { id: "pc4", name: "CAS SW2", specs: "Řada SW2, Druhý displej, Počítání kusů, Úředně ověřeno", price: "5.400 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "pc5", name: "TSJW", specs: "Nízká cena, velké číslice, kontrolní vážení", price: "5.990 Kč bez DPH" },
         ],
       },
       {
         id: "jerabove",
         label: "Jeřábové váhy",
         products: [
-          {
-            id: "j1",
-            name: "Jeřábová váha JEV",
-            price: "od 18.900 Kč",
-            specs: "S dálkovým ovládáním",
-          },
-          {
-            id: "j2",
-            name: "J1-RWS NEREZ",
-            price: "od 22.000 Kč",
-            specs: "Do mokrého prostředí",
-          },
+          { id: "j1", name: "JEV", specs: "Necejchovatelná, Dálkové ovládání, Váživost 3.5t-15t", price: "10.290 Kč bez DPH" },
+          { id: "j2", name: "J1-RWS NEREZ", specs: "Možnost ověření, Dálkové ovládání, 60kg-9t", price: "16.870 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "j3", name: "J1-RWP", specs: "Možnost ověření, Dálkové ovládání, 6kg-150kg", price: "7.990 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+        ],
+      },
+      {
+        id: "mustkove",
+        label: "Můstkové a plošinové váhy",
+        products: [
+          { id: "m1", name: "Plošinová váha 4TxxxxDFWL", specs: "Možnost ověření, do 1500kg, Včetně indikátoru", price: "23.140 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "m2", name: "FOX - 1", specs: "Stolní dvourozsahová, Ověřená, do 45kg", price: "6.260 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "m3", name: "FOX - 2", specs: "Stolní dvourozsahová, Ověřená, do 250kg", price: "7.690 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "m4", name: "CAS-DB2", specs: "Počítací funkce, S akumulátorem, Úředně ověřeno", price: "8.890 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+        ],
+      },
+      {
+        id: "paletove",
+        label: "Paletové váhy",
+        products: [
+          { id: "p1", name: "KPZ1", specs: "Váživost 2200kg, Přesnost 500g, Možnost ověření", price: "22.590 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "p2", name: "P4TLDFWL - UNI", specs: "Váživost do 1500kg, Možnost ověření", price: "19.790 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "p3", name: "P4TDFWL Paletová váha", specs: "Váživost do 2000kg, Možnost ověření", price: "17.690 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "p4", name: "Ližinová váha 4TLDFWL", specs: "Váživost do 3000kg, Možnost ověření", price: "19.900 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
         ],
       },
       {
         id: "silnicni",
         label: "Silniční mostové váhy",
         products: [
-          {
-            id: "s1",
-            name: "Silniční váha Profi Universal",
-            noPrice: true,
-            ctaText: "Nezávazná poptávka",
-            specs: "Váživost do 60 tun",
-          },
-          {
-            id: "s2",
-            name: "Nájezdová automobilová váha",
-            noPrice: true,
-            ctaText: "Nezávazná poptávka",
-          },
+          { id: "s1", name: "Ocelová konstrukce (Nájezdové/Zapuštěné)", noPrice: true, ctaText: "Nezávazná poptávka" },
+          { id: "s2", name: "PROFI UNIVERSAL", specs: "Železobetonová konstrukce, Váživost 60t, Třída OIML III", noPrice: true, ctaText: "Nezávazná poptávka" },
+          { id: "s3", name: "ZAPUŠTĚNÉ Železobetonové", noPrice: true, ctaText: "Nezávazná poptávka" },
         ],
       },
-      { id: "pocitaci", label: "Počítací váhy", products: [] },
-      { id: "indikatory", label: "Indikátory", products: [] },
+      {
+        id: "zdravotnicke",
+        label: "Váhy pro zdravotnictví",
+        products: [
+          { id: "z1", name: "Kojenecká váha TSCALE", price: "7.190 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "z2", name: "Osobní váha TSCALE", price: "11.970 Kč bez DPH", badge: "M", badgeLabel: "Ověřeno" },
+          { id: "z3", name: "Mobilní vážící křeslo 1TVKLDFWLB", price: "23.700 Kč bez DPH", badge: "O", badgeLabel: "Ověřitelná" },
+          { id: "z4", name: "Nájezdová váha pro invalidní vozíky", specs: "S vestavěnými nájezdy", price: "25.990 Kč bez DPH" },
+          { id: "z5", name: "Transportní lůžko s váhou 4TVL-DFWL", price: "59.990 Kč bez DPH" },
+        ],
+      },
+      {
+        id: "indikatory",
+        label: "Indikátory",
+        products: [
+          { id: "i1", name: "BW", specs: "Plastový, S akumulátorem, Limitní vážení", price: "3.990 Kč bez DPH" },
+          { id: "i2", name: "BWS", specs: "Nerezový, S akumulátorem", price: "5.190 Kč bez DPH" },
+          { id: "i3", name: "SB520", specs: "Počítací, 3 displeje", price: "4.000 Kč bez DPH" },
+          { id: "i4", name: "DFWL", specs: "Možnost úředního ověření", noPrice: true, ctaText: "Cena na dotaz" },
+          { id: "i5", name: "Smart", specs: "Nerez, pro automobilové váhy", noPrice: true, ctaText: "Cena na dotaz" },
+        ],
+      },
     ],
   },
   {
@@ -193,19 +146,12 @@ const CATALOG = [
     subcategories: [
       {
         id: "pokladny-all",
-        label: "Registrační pokladny",
+        label: "Registrační pokladny a příslušenství",
         products: [
-          {
-            id: "pk1",
-            name: "Pokladna CHD 3050",
-            price: "6.690 Kč bez DPH",
-            specs: "Bez měsíčních poplatků",
-          },
-          {
-            id: "pk2",
-            name: "Pokladna CHD 3850",
-            price: "8.350 Kč bez DPH",
-          },
+          { id: "pk1", name: "CHD 3050", specs: "Bez měsíčních poplatků, Pro malé prodejny", price: "Od 6.690 Kč bez DPH" },
+          { id: "pk2", name: "CHD 3850", specs: "Bez měsíčních poplatků, Pro menší prodejny", price: "Od 6.890 Kč bez DPH" },
+          { id: "pk3", name: "Snímače čárového kódu", noPrice: true, ctaText: "Více informací" },
+          { id: "pk4", name: "Termokotoučky a Termoetikety", noPrice: true, ctaText: "Více informací" },
         ],
       },
     ],
@@ -215,22 +161,26 @@ const CATALOG = [
 /* ──────────────────────────────────────────────────────────── */
 /*  PRODUCT CARD                                                */
 /* ──────────────────────────────────────────────────────────── */
-function ProductCard({ product }) {
+function ProductCard({ product, imageUrl }) {
   const isMBadge = product.badge === "M";
   const isCBadge = product.badge === "C";
+  const isOBadge = product.badge === "O";
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div
       className="group relative bg-white border border-slate-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/60 hover:border-slate-300 hover:-translate-y-0.5 flex flex-col"
       data-testid={`product-card-${product.id}`}
     >
-      {/* Badge — green for M, amber for Cejchuschopná */}
+      {/* Badge */}
       {product.badge && (
         <div
           className={`absolute top-3 right-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${
             isMBadge
               ? "bg-emerald-500 text-white"
-              : "bg-amber-100 text-amber-700 border border-amber-200"
+              : isCBadge
+              ? "bg-amber-100 text-amber-700 border border-amber-200"
+              : "bg-sky-100 text-sky-700 border border-sky-200"
           }`}
           data-testid={`product-badge-${product.id}`}
         >
@@ -243,14 +193,23 @@ function ProductCard({ product }) {
         </div>
       )}
 
-      {/* Image placeholder */}
-      <div className="relative h-48 bg-slate-50 border-b border-slate-100 flex items-center justify-center overflow-hidden">
-        <div className="flex flex-col items-center gap-2 text-slate-300 group-hover:text-slate-400 transition-colors">
-          <Scale className="w-12 h-12" />
-          <span className="text-[10px] font-medium uppercase tracking-widest">
-            Foto produktu
-          </span>
-        </div>
+      {/* Image — shows upload or placeholder */}
+      <div className="relative h-44 bg-slate-50 border-b border-slate-100 flex items-center justify-center overflow-hidden">
+        {imageUrl && !imgError ? (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-slate-300 group-hover:text-slate-400 transition-colors">
+            <Scale className="w-10 h-10" />
+            <span className="text-[10px] font-medium uppercase tracking-widest">
+              Foto produktu
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
@@ -264,13 +223,12 @@ function ProductCard({ product }) {
         </h3>
 
         {product.specs && (
-          <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+          <p className="text-xs text-slate-500 mt-1.5 leading-relaxed line-clamp-2">
             {product.specs}
           </p>
         )}
 
         <div className="mt-auto pt-4">
-          {/* Price — hidden for noPrice products */}
           {!product.noPrice && product.price && (
             <p
               className="text-lg font-bold text-[#0F172A] font-['Inter']"
@@ -482,8 +440,17 @@ function MobileChipNav({
 /* ──────────────────────────────────────────────────────────── */
 export default function ProductCatalog() {
   const [expandedParent, setExpandedParent] = useState("vahy");
-  const [activeSub, setActiveSub] = useState("zdravotnicke");
+  const [activeSub, setActiveSub] = useState("laboratorni");
   const [searchQuery, setSearchQuery] = useState("");
+  const [imageProductIds, setImageProductIds] = useState(new Set());
+
+  // Fetch which products have images
+  useEffect(() => {
+    axios
+      .get(`${API}/products/images/all`)
+      .then((res) => setImageProductIds(new Set(res.data.product_ids)))
+      .catch(() => {});
+  }, []);
 
   // Listen for category selection events from CategoriesGrid
   useEffect(() => {
@@ -547,7 +514,7 @@ export default function ProductCatalog() {
               Kompletní nabídka
             </h2>
             <p className="text-base text-slate-500 mt-2">
-              {totalProducts} produktů ve {CATALOG.length} kategoriích
+              {totalProducts} produktů ve 12 kategoriích
             </p>
           </div>
 
@@ -631,7 +598,15 @@ export default function ProductCatalog() {
                 <EmptyState label="Žádné výsledky" />
               ) : (
                 filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    imageUrl={
+                      imageProductIds.has(product.id)
+                        ? `${API}/products/${product.id}/image`
+                        : null
+                    }
+                  />
                 ))
               )}
             </div>
