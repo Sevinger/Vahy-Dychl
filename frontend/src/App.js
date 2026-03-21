@@ -3,6 +3,7 @@ import "@/App.css";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import CategoriesGrid from "@/components/CategoriesGrid";
+import ProductCatalog from "@/components/ProductCatalog";
 import Bestsellers from "@/components/Bestsellers";
 import ServiceSection from "@/components/ServiceSection";
 import ContactSection from "@/components/ContactSection";
@@ -36,6 +37,7 @@ function App() {
       <main>
         <HeroSection />
         <CategoriesGrid />
+        <ProductCatalog />
         <Bestsellers />
         <ServiceSection />
         <ContactSection />

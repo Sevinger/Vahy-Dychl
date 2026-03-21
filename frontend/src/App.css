@@ -76,3 +76,34 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
+
+/* Hide scrollbar for mobile chip nav */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Product card entry stagger */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-testid="catalog-product-grid"] > * {
+    animation: cardFadeIn 0.3s ease-out forwards;
+}
+[data-testid="catalog-product-grid"] > *:nth-child(1) { animation-delay: 0ms; }
+[data-testid="catalog-product-grid"] > *:nth-child(2) { animation-delay: 60ms; }
+[data-testid="catalog-product-grid"] > *:nth-child(3) { animation-delay: 120ms; }
+[data-testid="catalog-product-grid"] > *:nth-child(4) { animation-delay: 180ms; }
+[data-testid="catalog-product-grid"] > *:nth-child(5) { animation-delay: 240ms; }
+[data-testid="catalog-product-grid"] > *:nth-child(6) { animation-delay: 300ms; }
