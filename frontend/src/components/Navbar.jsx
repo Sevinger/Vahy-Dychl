@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,16 +16,20 @@ import {
 import { Phone, Search, ChevronDown, Menu, Scale, X } from "lucide-react";
 
 const navCategories = [
-  { label: "Obchodní a kuchyňské váhy", href: "#produkty" },
-  { label: "Průmyslové a paletové váhy", href: "#produkty" },
-  { label: "Laboratorní přesné váhy", href: "#produkty" },
-  { label: "Mostové a jeřábové váhy", href: "#produkty" },
-  { label: "Pokladny a snímače", href: "#produkty" },
+  { label: "Laboratorní váhy", parent: "vahy", sub: "laboratorni" },
+  { label: "Obchodní váhy", parent: "vahy", sub: "obchodni-bez" },
+  { label: "Průmyslové váhy", parent: "vahy", sub: "paletove" },
+  { label: "Silniční váhy", parent: "vahy", sub: "silnicni" },
+  { label: "Zdravotnické váhy", parent: "vahy", sub: "zdravotnicke" },
+  { label: "Registrační pokladny", parent: "pokladny", sub: "pokladny-all" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -33,9 +38,30 @@ export default function Navbar() {
   }, []);
 
   const scrollTo = (id) => {
-    const el = document.querySelector(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (!isHomePage) {
+      navigate("/");
+      setTimeout(() => {
+        const el = document.querySelector(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      const el = document.querySelector(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
     setMobileOpen(false);
+  };
+
+  const goToCategory = (cat) => {
+    navigate(`/katalog?parent=${cat.parent}&sub=${cat.sub}`);
+    setMobileOpen(false);
+  };
+
+  const goHome = () => {
+    if (isHomePage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -50,16 +76,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          <button
+            onClick={goHome}
             className="flex items-center gap-3 group"
             data-testid="logo-link"
           >
             <div className="w-10 h-10 bg-orange-600 rounded-sm flex items-center justify-center group-hover:bg-orange-500 transition-colors">
               <Scale className="w-5 h-5 text-white" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col text-left">
               <span className="text-white font-bold text-lg tracking-tight font-['Manrope']">
                 VÁHY DYCHL
               </span>
@@ -67,7 +92,7 @@ export default function Navbar() {
                 Vážicí systémy & servis
               </span>
             </div>
-          </a>
+          </button>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1" data-testid="desktop-nav">
@@ -84,13 +109,20 @@ export default function Navbar() {
                 {navCategories.map((cat) => (
                   <DropdownMenuItem
                     key={cat.label}
-                    onClick={() => scrollTo(cat.href)}
+                    onClick={() => goToCategory(cat)}
                     className="cursor-pointer text-slate-700 hover:text-orange-600 focus:text-orange-600 focus:bg-orange-50"
-                    data-testid={`nav-category-${cat.label.substring(0, 10)}`}
+                    data-testid={`nav-category-${cat.sub}`}
                   >
                     {cat.label}
                   </DropdownMenuItem>
                 ))}
+                <DropdownMenuItem
+                  onClick={() => navigate("/katalog")}
+                  className="cursor-pointer text-orange-600 font-semibold hover:text-orange-700 focus:text-orange-700 focus:bg-orange-50 border-t border-slate-100 mt-1 pt-2"
+                  data-testid="nav-all-products"
+                >
+                  Všechny produkty →
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -100,13 +132,6 @@ export default function Navbar() {
               data-testid="nav-sluzby"
             >
               Služby & Servis
-            </button>
-            <button
-              onClick={() => scrollTo("#o-nas")}
-              className="text-sm font-medium text-slate-300 hover:text-white px-4 py-2 rounded-md hover:bg-white/5 transition-colors"
-              data-testid="nav-o-nas"
-            >
-              O nás
             </button>
             <button
               onClick={() => scrollTo("#kontakt")}
@@ -119,14 +144,6 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <button
-              className="text-slate-400 hover:text-white p-2 rounded-md hover:bg-white/5 transition-colors hidden md:flex"
-              data-testid="search-btn"
-              aria-label="Hledat"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
             <a
               href="tel:+420775698555"
               className="hidden md:flex items-center gap-2 text-white font-semibold text-sm"
@@ -166,18 +183,21 @@ export default function Navbar() {
                   {navCategories.map((cat) => (
                     <button
                       key={cat.label}
-                      onClick={() => scrollTo(cat.href)}
+                      onClick={() => goToCategory(cat)}
                       className="text-left text-sm text-slate-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-colors"
                     >
                       {cat.label}
                     </button>
                   ))}
+                  <button
+                    onClick={() => { navigate("/katalog"); setMobileOpen(false); }}
+                    className="text-left text-sm text-orange-500 hover:text-orange-400 hover:bg-white/5 px-3 py-2 rounded-md transition-colors font-semibold"
+                  >
+                    Všechny produkty →
+                  </button>
                   <div className="h-px bg-slate-800 my-3" />
                   <button onClick={() => scrollTo("#sluzby")} className="text-left text-sm text-slate-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-colors">
                     Služby & Servis
-                  </button>
-                  <button onClick={() => scrollTo("#o-nas")} className="text-left text-sm text-slate-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-colors">
-                    O nás
                   </button>
                   <button onClick={() => scrollTo("#kontakt")} className="text-left text-sm text-slate-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-colors">
                     Kontakty

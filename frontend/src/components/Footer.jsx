@@ -1,12 +1,13 @@
+import { useNavigate, useLocation } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Scale, Phone, Mail, MapPin, Facebook, ArrowUpRight } from "lucide-react";
 
 const productLinks = [
-  "Obchodní a kuchyňské váhy",
-  "Průmyslové a paletové váhy",
-  "Laboratorní přesné váhy",
-  "Mostové a jeřábové váhy",
-  "Registrační pokladny",
+  { label: "Laboratorní váhy", parent: "vahy", sub: "laboratorni" },
+  { label: "Obchodní váhy", parent: "vahy", sub: "obchodni-bez" },
+  { label: "Průmyslové váhy", parent: "vahy", sub: "paletove" },
+  { label: "Silniční váhy", parent: "vahy", sub: "silnicni" },
+  { label: "Registrační pokladny", parent: "pokladny", sub: "pokladny-all" },
 ];
 
 const serviceLinks = [
@@ -17,9 +18,25 @@ const serviceLinks = [
 ];
 
 export default function Footer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   const scrollTo = (id) => {
-    const el = document.querySelector(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (!isHomePage) {
+      navigate("/");
+      setTimeout(() => {
+        const el = document.querySelector(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      const el = document.querySelector(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const goToCategory = (cat) => {
+    navigate(`/katalog?parent=${cat.parent}&sub=${cat.sub}`);
   };
 
   return (
@@ -29,14 +46,17 @@ export default function Footer() {
         <div className="py-16 md:py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Column 1: Company */}
           <div>
-            <div className="flex items-center gap-3 mb-6">
+            <button 
+              onClick={() => navigate("/")}
+              className="flex items-center gap-3 mb-6"
+            >
               <div className="w-9 h-9 bg-orange-600 rounded-sm flex items-center justify-center">
                 <Scale className="w-4 h-4 text-white" />
               </div>
               <span className="text-white font-bold text-lg font-['Manrope']">
                 VÁHY DYCHL
               </span>
-            </div>
+            </button>
             <div className="space-y-2 text-sm">
               <p className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
@@ -67,15 +87,23 @@ export default function Footer() {
             </p>
             <ul className="space-y-3">
               {productLinks.map((link) => (
-                <li key={link}>
+                <li key={link.label}>
                   <button
-                    onClick={() => scrollTo("#produkty")}
+                    onClick={() => goToCategory(link)}
                     className="text-sm text-slate-400 hover:text-orange-400 transition-colors text-left"
                   >
-                    {link}
+                    {link.label}
                   </button>
                 </li>
               ))}
+              <li>
+                <button
+                  onClick={() => navigate("/katalog")}
+                  className="text-sm text-orange-500 hover:text-orange-400 transition-colors text-left font-semibold"
+                >
+                  Všechny produkty →
+                </button>
+              </li>
             </ul>
           </div>
 

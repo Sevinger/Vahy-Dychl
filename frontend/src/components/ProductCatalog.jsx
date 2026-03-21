@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import axios from "axios";
@@ -447,8 +448,12 @@ function MobileChipNav({
 /*  MAIN CATALOG COMPONENT                                      */
 /* ──────────────────────────────────────────────────────────── */
 export default function ProductCatalog() {
-  const [expandedParent, setExpandedParent] = useState("vahy");
-  const [activeSub, setActiveSub] = useState("laboratorni");
+  const [searchParams] = useSearchParams();
+  const urlParent = searchParams.get("parent");
+  const urlSub = searchParams.get("sub");
+  
+  const [expandedParent, setExpandedParent] = useState(urlParent || "vahy");
+  const [activeSub, setActiveSub] = useState(urlSub || "laboratorni");
   const [searchQuery, setSearchQuery] = useState("");
   const [imageProductIds, setImageProductIds] = useState(new Set());
   
@@ -460,6 +465,12 @@ export default function ProductCatalog() {
     setSelectedProduct(product);
     setModalOpen(true);
   };
+
+  // Set category from URL params on mount
+  useEffect(() => {
+    if (urlParent) setExpandedParent(urlParent);
+    if (urlSub) setActiveSub(urlSub);
+  }, [urlParent, urlSub]);
 
   // Fetch which products have images
   useEffect(() => {

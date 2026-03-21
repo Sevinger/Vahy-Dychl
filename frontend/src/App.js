@@ -4,12 +4,11 @@ import "@/App.css";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import CategoriesGrid from "@/components/CategoriesGrid";
-import ProductCatalog from "@/components/ProductCatalog";
-import Bestsellers from "@/components/Bestsellers";
 import ServiceSection from "@/components/ServiceSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import AdminPanel from "@/components/AdminPanel";
+import CatalogPage from "@/components/CatalogPage";
 import { Toaster } from "@/components/ui/sonner";
 
 function HomePage() {
@@ -36,8 +35,6 @@ function HomePage() {
       <main>
         <HeroSection />
         <CategoriesGrid />
-        <ProductCatalog />
-        <Bestsellers />
         <ServiceSection />
         <ContactSection />
       </main>
@@ -51,6 +48,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/katalog" element={<CatalogPage />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
       <Toaster position="top-right" richColors />
