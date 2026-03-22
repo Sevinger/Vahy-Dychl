@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import axios from "axios";
 import {
   ChevronDown,
   ChevronRight,
@@ -16,8 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import ProductDetailModal from "./ProductDetailModal";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import PRODUCT_IMAGES from "@/data/productImages";
 
 /* ──────────────────────────────────────────────────────────── */
 /*  CATALOG DATA                                                */
@@ -455,7 +453,6 @@ export default function ProductCatalog() {
   const [expandedParent, setExpandedParent] = useState(urlParent || "vahy");
   const [activeSub, setActiveSub] = useState(urlSub || "laboratorni");
   const [searchQuery, setSearchQuery] = useState("");
-  const [imageProductIds, setImageProductIds] = useState(new Set());
   
   // Product detail modal state
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -471,14 +468,6 @@ export default function ProductCatalog() {
     if (urlParent) setExpandedParent(urlParent);
     if (urlSub) setActiveSub(urlSub);
   }, [urlParent, urlSub]);
-
-  // Fetch which products have images
-  useEffect(() => {
-    axios
-      .get(`${API}/products/images/all`)
-      .then((res) => setImageProductIds(new Set(res.data.product_ids)))
-      .catch(() => {});
-  }, []);
 
   // Listen for category selection events from CategoriesGrid
   useEffect(() => {
@@ -629,11 +618,7 @@ export default function ProductCatalog() {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    imageUrl={
-                      imageProductIds.has(product.id)
-                        ? `${API}/products/${product.id}/image`
-                        : null
-                    }
+                    imageUrl={PRODUCT_IMAGES[product.id] || null}
                     onProductClick={handleProductClick}
                   />
                 ))
@@ -648,11 +633,7 @@ export default function ProductCatalog() {
         product={selectedProduct}
         open={modalOpen}
         onOpenChange={setModalOpen}
-        imageUrl={
-          selectedProduct && imageProductIds.has(selectedProduct.id)
-            ? `${API}/products/${selectedProduct.id}/image`
-            : null
-        }
+        imageUrl={selectedProduct ? PRODUCT_IMAGES[selectedProduct.id] || null : null}
       />
     </section>
   );
